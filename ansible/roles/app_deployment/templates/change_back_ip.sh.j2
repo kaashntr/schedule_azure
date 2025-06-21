@@ -1,0 +1,5 @@
+#!/bin/bash
+
+FILE='{{ app_install_dir }}/{{ app_dir_name }}/static/js/main.29a6a448.js'
+
+sed -i "s|http://localhost:8080/|http://{{backend_private_ip}}:8080/|g" "$FILE"

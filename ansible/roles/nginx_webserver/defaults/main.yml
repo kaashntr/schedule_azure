@@ -20,3 +20,6 @@ nginx_http_port: 3000
 
 # Whether to disable the default Nginx site
 nginx_disable_default_site: true
+
+file_owner: "file owner"
+file_group: "file group"

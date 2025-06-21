@@ -39,6 +39,18 @@
     creates: "{{ app_install_dir }}/index.html" # Idempotency: only unarchive if a known file (like index.html) doesn't exist
   become: true # Unarchive as the user who owns the app files
 
+- name: Create script to change backend ip in frontend code
+  ansible.builtin.template:
+    src: change_back_ip.sh.j2 # Template file for your Nginx server block
+    dest: "/opt/change_back_ip.sh" # Unique name for your site config
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Run this script
+  ansible.builtin.shell: | 
+    sh /opt/change_back_ip.sh
+
 - name: Delete temporary build archive
   ansible.builtin.file:
     path: "{{ app_build_remote_tmp_path }}"

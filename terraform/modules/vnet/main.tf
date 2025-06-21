@@ -39,6 +39,7 @@ resource "azurerm_subnet" "postgre_subnet" {
     }
   }
 }
+
 resource "azurerm_subnet" "redis_subnet" {
   name                 = "AzureRedisSubnet"
   resource_group_name  = var.resource_group_name

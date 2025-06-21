@@ -1,0 +1,25 @@
+# roles/your_restore_role/defaults/main.yml
+
+# --- PostgreSQL Connection Details ---
+# The password for the PostgreSQL administrative user.
+# IMPORTANT: For production, use Ansible Vault to encrypt this variable!
+pgpassword: "Password123!"
+
+# The PostgreSQL administrative user for database operations (e.g., dropping/creating schemas).
+admin_user: "postgre"
+
+# The name of the PostgreSQL database to restore.
+pgdatabase: "postgres"
+
+# The hostname or IP address of the PostgreSQL server.
+pg_host: {{ postgre_hostname }}
+
+# The port PostgreSQL is listening on. Default is 5432.
+pg_port: 5432
+
+# --- Database Dump File Details ---
+# The *full path* to the PostgreSQL dump file on the remote server.
+# This corresponds to the `filename` variable in your bash script.
+# Ensure this file is present on the target host before the restore task runs.
+src_dump_path: "/home/boh/Documents/schedule_azure/ansible/roles/restore_from_dump/files/2024-08-19.dump"
+dest_dump_path: "/tmp/2024-08-19.dump"

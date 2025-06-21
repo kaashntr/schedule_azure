@@ -5,20 +5,20 @@
 #export PATH=$PATH:$pathA
 
 #write your password
-PGPASSWORD=""
+PGPASSWORD="{{ pgpassword }}"
 export PGPASSWORD
 
 #change the path to the file from which will be made restore
 #write this on the command line as the first parameter
-filename=$1
+filename="{{ dest_dump_path }}"
 #write your user
-dbUser="postgre"
+dbUser="{{ admin_user }}"
 #write your database
-database="postgres"
+database="{{ pgdatabase }}"
 #write your host
-host=localhost
+host="{{ pg_host }}"
 #write your port
-port=50023
+port="{{ pg_port }}"
 
 psql -U $dbUser -h $host -p $port -d $database -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
 psql --set ON_ERROR_STOP=off -U $dbUser -h $host -p $port -d $database -1 -f $filename

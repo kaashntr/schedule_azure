@@ -1,0 +1,30 @@
+- name: Ensure PostgreSQL client packages are installed (Debian/Ubuntu)
+  ansible.builtin.apt:
+    name: postgresql-client
+    state: present
+    update_cache: yes 
+  when: ansible_os_family == "Debian"
+- name: Render and copy database restore script to target
+  ansible.builtin.template:
+    src: pgsql_restore.sh.j2             # Source path relative to role's 'templates/' directory
+    dest: "/tmp/restore_db.sh" # Destination path on the remote server
+    mode: '0755'                      # Make the script executable
+    owner: root
+    group: root
+- name: Copy dump to remote machine
+  ansible.builtin.copy:
+    src: "{{ src_dump_path }}"
+    dest: "{{ dest_dump_path }}"
+    mode: '0644'
+    owner: root
+    group: root
+    
+- name: Run restore script
+  ansible.builtin.shell: |
+    sh /tmp/restore_db.sh
+- name: Remove postgresql-client
+  ansible.builtin.apt:
+    name: postgresql-client
+    state: absent
+    update_cache: yes 
+  when: ansible_os_family == "Debian"
