@@ -134,7 +134,7 @@ module "backend_vm" {
   location                     = azurerm_resource_group.rg.location
   prefix                       = var.prefix
   vm_name                      = "backend"
-  vm_size                      = var.vm_size
+  vm_size                      = "Standard_B1s"
   admin_username               = var.admin_username
   os_disk_caching              = var.vm_os_disk_caching
   os_disk_storage_account_type = var.vm_os_disk_storage_account_type
@@ -181,6 +181,22 @@ module "proxy_vm" {
   nsg_id                       = module.proxy_nsg.network_security_group_id
   public_ip_id                 = azurerm_public_ip.proxy_ip.id
 }
+
+module "redis_vm" {
+  source                       = "./modules/vm"
+  resource_group_name          = azurerm_resource_group.rg.name
+  location                     = azurerm_resource_group.rg.location
+  prefix                       = var.prefix
+  vm_name                      = "redis"
+  vm_size                      = "Standard_B1s"
+  admin_username               = var.admin_username
+  os_disk_caching              = var.vm_os_disk_caching
+  os_disk_storage_account_type = var.vm_os_disk_storage_account_type
+  pub_key_path                 = var.vm_pub_key_path
+  subnet_id                    = module.vnet.redis_subnet_id
+  nsg_id                       = module.redis_nsg.network_security_group_id
+}
+
 module "postgres" {
   source                 = "./modules/postgres"
   server_name            = var.postgre_server_name
@@ -192,14 +208,14 @@ module "postgres" {
   administrator_password = var.postgre_admin_password
 }
 
-module "redis" {
-  source = "./modules/redis"
-  location = azurerm_resource_group.rg.location
-  resource_group_name = azurerm_resource_group.rg.name
-  redis_cache_name = var.redis_server_name
-  existing_vnet_id = module.vnet.vnet_id
-  private_endpoint_subnet_id = module.vnet.redis_subnet_id
-}
+# module "redis" {
+#   source = "./modules/redis"
+#   location = azurerm_resource_group.rg.location
+#   resource_group_name = azurerm_resource_group.rg.name
+#   redis_cache_name = var.redis_server_name
+#   existing_vnet_id = module.vnet.vnet_id
+#   private_endpoint_subnet_id = module.vnet.redis_subnet_id
+# }
 
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/templates/vars.yml.tpl", {
@@ -208,7 +224,7 @@ resource "local_file" "ansible_inventory" {
     proxy_private_ip    = module.proxy_vm.private_ip[0],
     proxy_public_ip     = azurerm_public_ip.proxy_ip.ip_address,
     postgre_hostname    = module.postgres.server_hostname,
-    redis_private_ip    = module.redis.redis_private_ip_address,
+    redis_private_ip    = module.redis_vm.private_ip[0],
     bastion_public_ip   = module.bastion.bastion_public_ip
   })
 

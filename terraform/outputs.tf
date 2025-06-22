@@ -15,7 +15,7 @@ output "postgre_hostname" {
   value = module.postgres.server_hostname
 }
 output "redis_private_ip" {
-  value = module.redis.redis_private_ip_address
+  value = module.redis_vm.private_ip
 }
 output "bastion_public_ip" {
   value = module.bastion.bastion_public_ip
