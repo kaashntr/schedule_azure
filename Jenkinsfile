@@ -1,9 +1,11 @@
 pipeline{
     agent any
+
     stages{
-        stage("Test"){
+        stage("Checkout SCM"){
             steps{
-                echo "111"
+                checkout scm
+                sh 'ls'
             }
         }
     }
