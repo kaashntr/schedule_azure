@@ -1,0 +1,6 @@
+---
+# defaults file for redis_install
+
+redis_bind_address: "example"
+
+redis_port: 6379

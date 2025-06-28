@@ -8,8 +8,6 @@ nginx_package_name: nginx
 # This should match where your 'app_deployment' role extracts the build.
 nginx_app_root_path: /opt/build
 
-# Domain name(s) for your Nginx server block.
-# Use server_name: "localhost" if you are only accessing by IP.
 nginx_server_names:
   - localhost
   # - your_domain.com

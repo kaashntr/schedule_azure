@@ -1,15 +1,8 @@
 #!/bin/bash
 
-#change on your path to PostgreSQL
-#pathA=/c/Program\ Files/PostgreSQL/13/bin
-#export PATH=$PATH:$pathA
-
-#write your password
 PGPASSWORD="{{ pgpassword }}"
 export PGPASSWORD
 
-#change the path to the file from which will be made restore
-#write this on the command line as the first parameter
 filename="{{ dest_dump_path }}"
 #write your user
 dbUser="{{ admin_user }}"

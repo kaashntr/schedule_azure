@@ -1,0 +1,8 @@
+---
+# handlers file for redis_install
+
+- name: restart redis
+  ansible.builtin.service:
+    name: redis-server
+    state: restarted
+  listen: "restart redis service" # Use a named listener for clarity

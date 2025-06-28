@@ -6,9 +6,9 @@
   when: ansible_os_family == "Debian"
 - name: Render and copy database restore script to target
   ansible.builtin.template:
-    src: pgsql_restore.sh.j2             # Source path relative to role's 'templates/' directory
-    dest: "/tmp/restore_db.sh" # Destination path on the remote server
-    mode: '0755'                      # Make the script executable
+    src: pgsql_restore.sh.j2             
+    dest: "/tmp/restore_db.sh" 
+    mode: '0755'                      
     owner: root
     group: root
 - name: Copy dump to remote machine
@@ -18,10 +18,13 @@
     mode: '0644'
     owner: root
     group: root
-    
 - name: Run restore script
   ansible.builtin.shell: |
     sh /tmp/restore_db.sh
+- name: Delete dump after restoring
+  ansible.builtin.file:
+    path:  "{{ dest_dump_path }}"
+    state: absent
 - name: Remove postgresql-client
   ansible.builtin.apt:
     name: postgresql-client
