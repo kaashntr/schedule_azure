@@ -4,20 +4,21 @@
     state: present
     update_cache: yes 
   when: ansible_os_family == "Debian"
+  become: true
 - name: Render and copy database restore script to target
   ansible.builtin.template:
     src: pgsql_restore.sh.j2             
     dest: "/tmp/restore_db.sh" 
     mode: '0755'                      
-    owner: root
-    group: root
+    owner: login
+    group: login
 - name: Copy dump to remote machine
   ansible.builtin.copy:
     src: "{{ src_dump_path }}"
     dest: "{{ dest_dump_path }}"
     mode: '0644'
-    owner: root
-    group: root
+    owner: login
+    group: login
 - name: Run restore script
   ansible.builtin.shell: |
     sh /tmp/restore_db.sh
@@ -29,5 +30,7 @@
   ansible.builtin.apt:
     name: postgresql-client
     state: absent
+    purge: true
     update_cache: yes 
+  become: true
   when: ansible_os_family == "Debian"

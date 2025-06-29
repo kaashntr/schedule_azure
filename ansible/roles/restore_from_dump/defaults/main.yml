@@ -12,7 +12,7 @@ admin_user: "Postgres user"
 pgdatabase: "Postgres DB name"
 
 # The hostname or IP address of the PostgreSQL server.
-pg_host: {{ postgre_hostname }}
+pg_host: ${ postgre_hostname }
 
 # The port PostgreSQL is listening on. Default is 5432.
 pg_port: 5432
