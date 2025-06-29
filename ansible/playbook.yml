@@ -1,45 +1,22 @@
-# deploy.yml
-
-- name: Open bastion tunnel (This play runs on localhost to establish the tunnel)
-  hosts: localhost
-  gather_facts: false # No facts needed for localhost operation
-  vars:
-    bastion_name: dev-bastion
-    resource_group: internship-rg
-    vm_azure_name: dev-app
-    admin_username: login
-    ssh_key_path: ~/.ssh/id_ed25519
-    local_tunnel_port: 50022 # Local port for the tunnel
-
-  tasks:
-    - name: Start Azure Bastion tunnel to target VM (runs in background)
-      ansible.builtin.shell: |
-        az network bastion tunnel \
-          --name {{ bastion_name }} \
-          --resource-group {{ resource_group }} \
-          --target-resource-id $(az vm show -g {{ resource_group }} -n {{ vm_azure_name }} --query id -o tsv) \
-          --resource-port 22 \
-          --port {{ local_tunnel_port }} \
-          --timeout 3600 # Keep the tunnel open for 3600 seconds (1 hour)
-      async: 3605
-      poll: 0 # Don't wait for the tunnel command to finish (it runs indefinitely)
-
-    - name: Pause to allow Bastion tunnel to establish
-      ansible.builtin.pause:
-        seconds: 10 # Give the tunnel a few seconds to fully set up
 # playbook.yml
 - name: Deploy and configure application on target VM via Bastion tunnel
+  hosts: localhost
+  vars:
+    resource_group: "inernship_rg"
+  roles:
+    - bastion
+
+- name: Restore DB from dump file
   hosts: appvm
   gather_facts: true
-  become: true
   vars_files:
     - vars.yml
   vars:
-    nginx_app_root_path: /opt/build # Ensure this matches where app_deployment extracts
-    nginx_server_names:
-      - "10.0.2.5" # Use the server's IP directly as a server_name
+    pgpassword: "Password123!"
+    admin_user: "postgre"
+    pgdatabase: "postgres"
+    src_dump_path: "/home/mint/Downloads/Documents/schedule_azure/ansible/roles/restore_from_dump/files/2024-08-19.dump"
+    dest_dump_path: "/tmp/2024-08-19.dump"
 
   roles:
-    - app_deployment   # This role extracts your build to /opt/build
-    # - nginx_webserver  # This role configures Nginx to serve from /opt/build
-    # - restore_from_dump
+    - restore_from_dump

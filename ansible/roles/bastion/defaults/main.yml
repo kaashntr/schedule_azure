@@ -1,0 +1,6 @@
+bastion_name: dev-bastion
+resource_group: internship-rg
+vm_name: dev-app
+admin_username: login
+ssh_key_path: ~/.ssh/id_ed25519
+local_port: 50022

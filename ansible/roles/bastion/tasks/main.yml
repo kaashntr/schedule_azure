@@ -1,0 +1,15 @@
+- name: Start Bastion tunnel (persistent)
+  shell: |
+    az network bastion tunnel \
+      --name {{ bastion_name }} \
+      --resource-group {{ resource_group }} \
+      --target-resource-id $(az vm show -g {{ resource_group }} -n {{ vm_name }} --query id -o tsv) \
+      --resource-port 22 \
+      --port {{ local_port }} \
+      --timeout 3600
+  async: 3605
+  poll: 0
+
+- name: Pause briefly for tunnel to establish
+  pause:
+    seconds: 10

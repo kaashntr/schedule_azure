@@ -220,12 +220,16 @@ module "postgres" {
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/templates/vars.yml.tpl", {
     app_private_ip      = module.app_vm.private_ip[0],
+    app_vm_name         = module.app_vm.vm_name,
     backend_private_ip  = module.backend_vm.private_ip[0],
+    backend_vm_name     = module.backend_vm.vm_name,
     proxy_private_ip    = module.proxy_vm.private_ip[0],
     proxy_public_ip     = azurerm_public_ip.proxy_ip.ip_address,
+    proxy_vm_name       = module.proxy_vm.vm_name,
     postgre_hostname    = module.postgres.server_hostname,
     redis_private_ip    = module.redis_vm.private_ip[0],
-    bastion_public_ip   = module.bastion.bastion_public_ip
+    redis_vm_name       = module.redis_vm.vm_name,
+    bastion_name        = module.bastion.bastion_name
   })
 
   # Define where the inventory file will be created.
