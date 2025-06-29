@@ -6,6 +6,7 @@ pipeline{
             steps{
                 checkout scm
                 sh 'ls'
+                ansible --version
             }
         }
     }
