@@ -208,15 +208,6 @@ module "postgres" {
   administrator_password = var.postgre_admin_password
 }
 
-# module "redis" {
-#   source = "./modules/redis"
-#   location = azurerm_resource_group.rg.location
-#   resource_group_name = azurerm_resource_group.rg.name
-#   redis_cache_name = var.redis_server_name
-#   existing_vnet_id = module.vnet.vnet_id
-#   private_endpoint_subnet_id = module.vnet.redis_subnet_id
-# }
-
 resource "local_file" "ansible_inventory" {
   content = templatefile("${path.module}/templates/vars.yml.tpl", {
     app_private_ip      = module.app_vm.private_ip[0],

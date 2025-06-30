@@ -1,0 +1,16 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars:
+    resource_group: "inernship_rg"
+    vm_name: "dev-redis"
+    local_port: 50024
+  roles:
+    - bastion
+
+- name: Install and config redis
+  hosts: redisvm
+  gather_facts: true
+  vars:
+    redis_bind_address: "0.0.0.0"
+  roles:
+    - redis_install

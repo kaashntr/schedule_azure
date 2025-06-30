@@ -1,0 +1,12 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars:
+    resource_group: "inernship_rg"
+    vm_name: "dev-app"
+    local_port: 50023
+  roles:
+    - bastion
+- name: Install docker on vm
+  hosts: appvm 
+  roles:
+    - docker_install

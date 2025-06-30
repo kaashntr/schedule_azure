@@ -10,6 +10,7 @@
   ansible.builtin.apt:
     name: redis-server
     state: present
+  become: true
   notify: "restart redis service" # Restart if Redis server is newly installed or updated
 
 - name: Configure Redis bind address
@@ -22,6 +23,7 @@
     mode: '0644'
     state: present
     backup: yes # Create a backup of the original file before modifying
+  become: true
   notify: "restart redis service" # Restart Redis if the bind address changes
 
 - name: Configure Redis port (if different from default)
@@ -36,9 +38,3 @@
     backup: yes
   when: redis_port != 6379 # Only run if the port is explicitly changed from default
   notify: "restart redis service"
-
-- name: Ensure Redis service is running and enabled on boot
-  ansible.builtin.service:
-    name: redis-server
-    state: started
-    enabled: yes
