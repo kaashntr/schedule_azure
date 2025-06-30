@@ -6,12 +6,6 @@ terraform {
       version = ">= 3.0.0"
     }
   }
-  # backend "azurerm" {
-  #   resource_group_name  = "class-schedule-rg"  # Name of the resource group where your storage account resides
-  #   storage_account_name = "storageaccount"
-  #   container_name       = "tfstate"                # Name of the blob container for state files
-  #   key                  = "terraform.tfstate"      # The path/name of the state file within the container
-  # }
 }
 provider "azurerm" {
   features {}
@@ -22,14 +16,6 @@ resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
 }
-
-# resource "azurerm_storage_account" "storage_account" {
-#   name                     = "storageaccount"
-#   resource_group_name      = azurerm_resource_group.rg.name
-#   location                 = azurerm_resource_group.rg.location
-#   account_tier             = "Standard"
-#   account_replication_type = "GRS"
-# }
 
 module "vnet" {
   source = "./modules/vnet"
@@ -85,18 +71,6 @@ module "proxy_nsg" {
   depends_on                 = [azurerm_resource_group.rg]
 }
 
-# module "bastio_nsg" {
-#   source                     = "./modules/nsg"
-#   resource_group_name        = azurerm_resource_group.rg.name
-#   use_for_each               = var.use_for_each
-#   custom_rules               = var.bastion_custom_rules
-#   destination_address_prefix = var.destination_address_prefix
-#   security_group_name        = var.bastion_nsg_name
-#   source_address_prefix      = var.source_address_prefix
-#   tags                       = var.tags
-#   depends_on                 = [azurerm_resource_group.rg]
-# }
-
 module "postgre_nsg" {
   source                     = "./modules/nsg"
   resource_group_name        = azurerm_resource_group.rg.name
@@ -149,7 +123,7 @@ module "app_vm" {
   location                     = azurerm_resource_group.rg.location
   prefix                       = var.prefix
   vm_name                      = "app"
-  vm_size                      = var.vm_size
+  vm_size                      = "Standard_B1s"
   admin_username               = var.admin_username
   os_disk_caching              = var.vm_os_disk_caching
   os_disk_storage_account_type = var.vm_os_disk_storage_account_type
