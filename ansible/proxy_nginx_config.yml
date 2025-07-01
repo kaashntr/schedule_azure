@@ -1,0 +1,27 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  vars:
+    resource_group: "internship-rg"
+    vm_name: "{{ proxy_vm_name }}"
+    local_port: 50022
+  roles:
+    - bastion
+- name: Configure Nginx with Cloudflare SSL
+  vars_files:
+    - vars.yml
+  vars:
+    nginx_domain: "app.class-schedule.pp.ua"
+    nginx_server_names:
+      - "app.class-schedule.pp.ua"
+      - "www.app.class-schedule.pp.ua"
+    nginx_ssl_certificate_src: "files/ssl_certificate.pem"
+    nginx_ssl_certificate_key_src: "files/ssl_certificate.key"
+    nginx_proxy_frontend_host: "{{app_private_ip}}"
+    nginx_proxy_frontend_port: 3000
+  hosts: proxyvm # Target your servers where Nginx will be configured
+  become: yes # Required to install packages and manage Nginx configuration
+
+  roles:
+    - reverse_proxy_conf

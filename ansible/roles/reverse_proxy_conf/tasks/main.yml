@@ -1,0 +1,68 @@
+---
+# tasks/main.yml for nginx_cloudflare_ssl role
+
+- name: Ensure Nginx is installed
+  ansible.builtin.package:
+    name: nginx
+    state: present
+  notify: Restart nginx
+
+- name: Create SSL certificate directory if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ nginx_ssl_cert_dir }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Deploy SSL certificate
+  ansible.builtin.copy:
+    src: "{{ nginx_ssl_certificate_src }}"
+    dest: "{{ nginx_ssl_cert_dir }}/{{ nginx_domain }}.pem"
+    mode: '0644' # Read by Nginx, not writable by others
+    owner: root
+    group: root
+  # Use no_log: true for sensitive data in production
+  # no_log: true
+  notify: Restart nginx
+
+- name: Deploy SSL private key
+  ansible.builtin.copy:
+    src: "{{ nginx_ssl_certificate_key_src }}"
+    dest: "{{ nginx_ssl_cert_dir }}/{{ nginx_domain }}.key"
+    mode: '0600' # Only readable by root
+    owner: root
+    group: root
+  # Use no_log: true for sensitive data in production
+  # no_log: true
+  notify: Restart nginx
+
+- name: Deploy Nginx site configuration
+  ansible.builtin.template:
+    src: nginx_site.conf.j2
+    dest: "{{ nginx_sites_available_path }}/{{ nginx_site_conf_name }}"
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Restart nginx
+
+- name: Enable Nginx site (create symlink)
+  ansible.builtin.file:
+    src: "{{ nginx_sites_available_path }}/{{ nginx_site_conf_name }}"
+    dest: "{{ nginx_sites_enabled_path }}/{{ nginx_site_conf_name }}"
+    state: link
+    force: yes # Overwrite if symlink already exists
+  notify: Restart nginx
+
+- name: Remove default Nginx site (if configured)
+  ansible.builtin.file:
+    path: "{{ nginx_sites_enabled_path }}/default"
+    state: absent
+  when: nginx_remove_default_site | bool
+  notify: Restart nginx
+
+- name: Ensure Nginx service is started and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes

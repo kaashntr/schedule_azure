@@ -5,8 +5,16 @@ pipeline{
         stage("Checkout SCM"){
             steps{
                 checkout scm
-                sh 'ls'
-                sh 'ansible --version'
+            }
+        }
+        stage("Deploy container from image"){
+            steps{
+                script{
+                    withCredentials([azureServicePrincipal('azure-service-principal')]) {
+                        sh 'sh scripts/az_login.sh'
+                        sh 'az account show'
+                    }
+                }
             }
         }
     }

@@ -1,0 +1,90 @@
+# This file is managed by Ansible. Do NOT edit manually!
+
+# HTTP Block (Optional, for redirection from HTTP to HTTPS)
+server {
+    listen 80;
+    listen [::]:80;
+    server_name {{ nginx_server_names | join(' ') }};
+
+    # Cloudflare's recommended way to redirect HTTP to HTTPS
+    # Ensure this block is executed only if traffic comes from Cloudflare
+    if ($http_x_forwarded_proto = "http") {
+        return 301 https://$host$request_uri;
+    }
+
+    # Fallback for direct HTTP access or if Cloudflare is bypassed
+    # This ensures HTTP traffic always redirects to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+# HTTPS Block (Required for Full/Full (strict) SSL)
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name {{ nginx_server_names | join(' ') }};
+
+    ssl_certificate {{ nginx_ssl_cert_dir }}/{{ nginx_domain }}.pem;
+    ssl_certificate_key {{ nginx_ssl_cert_dir }}/{{ nginx_domain }}.key;
+
+    # Basic SSL optimizations
+    ssl_session_cache {{ nginx_ssl_session_cache }};
+    ssl_session_timeout {{ nginx_ssl_session_timeout }};
+    ssl_protocols {{ nginx_ssl_protocols }};
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers "{{ nginx_ssl_ciphers }}";
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    resolver {{ nginx_resolver_ips | join(' ') }} valid={{ nginx_resolver_timeout }};
+    resolver_timeout {{ nginx_resolver_timeout }};
+
+    # Cloudflare IP ranges for X-Forwarded-For headers
+    # This ensures Nginx logs the actual client IP, not Cloudflare's IP.
+    # It's crucial for accurate logging and security rules based on client IP.
+{% if cloudflare_ipv4_ranges is defined and cloudflare_ipv4_ranges | length > 0 %}
+    {% for ip_range in cloudflare_ipv4_ranges %}
+    set_real_ip_from {{ ip_range }};
+    {% endfor %}
+{% endif %}
+{% if cloudflare_ipv6_ranges is defined and cloudflare_ipv6_ranges | length > 0 %}
+    {% for ip_range in cloudflare_ipv6_ranges %}
+    set_real_ip_from {{ ip_range }};
+    {% endfor %}
+{% endif %}
+    real_ip_header CF-Connecting-IP; # Cloudflare's header for the real client IP
+    real_ip_recursive on; # Process X-Forwarded-For if multiple proxies are involved
+
+    # --- Reverse Proxy Configuration ---
+    # This block proxies requests to your frontend application in the private network.
+    location / {
+        # Pass the request to the backend frontend application
+        proxy_pass http://{{ nginx_proxy_frontend_host }}:{{ nginx_proxy_frontend_port }};
+
+        # Standard proxy headers to pass client information to the backend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme; # Tells backend if original request was HTTP or HTTPS
+        proxy_set_header X-Forwarded-Host $host; # Passes the original host header
+
+        # Optional: Adjust timeouts if your backend takes a long time to respond
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+
+        # Optional: Handle WebSocket connections (if your frontend uses them)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # Optional: Deny access to hidden files (e.g., .git, .htpasswd)
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+
+    # Optional: Log Cloudflare headers for debugging
+    # add_header X-CF-Request-ID $http_cf_ray;
+    # add_header X-CF-IP $http_cf_connecting_ip;
+}

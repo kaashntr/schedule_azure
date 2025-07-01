@@ -42,6 +42,8 @@ terraform.rc
 # Інші тимчасові файли
 *.tmp
 *.out
+*.pem
+*.key
 
 autoscale/
 vmss/

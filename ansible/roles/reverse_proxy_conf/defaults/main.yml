@@ -1,0 +1,101 @@
+---
+# defaults/main.yml for nginx_cloudflare_ssl role
+
+# --- Required Variables ---
+# Your primary domain name (e.g., "yourdomain.com").
+# This will be used in server_name and certificate paths.
+nginx_domain: "example.com"
+
+# List of all server names (domains and subdomains) Nginx should respond to.
+# Example: ["example.com", "www.example.com"]
+nginx_server_names:
+  - "{{ nginx_domain }}"
+  - "www.{{ nginx_domain }}"
+
+# Path to your SSL certificate file on the Ansible control machine.
+# This file will be copied to the remote server.
+# It should be located in the 'files/' directory of this role,
+# or an absolute path on your control machine.
+# Example: "files/yourdomain.com.pem"
+# IMPORTANT: For security, consider using Ansible Vault for the playbook
+# that defines the *actual path* if it's not relative to the role's 'files/' dir.
+nginx_ssl_certificate_src: "files/example.com.pem"
+
+# Path to your SSL private key file on the Ansible control machine.
+# This file will be copied to the remote server.
+# It should be located in the 'files/' directory of this role,
+# or an absolute path on your control machine.
+# Example: "files/yourdomain.com.key"
+# IMPORTANT: For security, consider using Ansible Vault for the playbook
+# that defines the *actual path* if it's not relative to the role's 'files/' dir.
+nginx_ssl_certificate_key_src: "files/example.com.key"
+
+# Path where SSL certificates will be stored on the target server.
+nginx_ssl_cert_dir: "/etc/nginx/ssl"
+
+# Path to the Nginx site configuration file.
+nginx_sites_available_path: "/etc/nginx/sites-available"
+nginx_sites_enabled_path: "/etc/nginx/sites-enabled"
+
+# Name of the Nginx configuration file for your site.
+nginx_site_conf_name: "{{ nginx_domain }}.conf"
+
+# Document root for your web content (can be empty if only proxying root).
+# If your Nginx serves static files *and* proxies, this is still relevant.
+nginx_web_root: "/var/www/html"
+
+# --- New Variables for Reverse Proxy ---
+# The private IP address or hostname of your backend frontend application.
+# Example: "10.0.2.5" or "dev-frontend-vm"
+nginx_proxy_frontend_host: "10.0.2.5"
+
+# The port your backend frontend application is listening on.
+# Example: 3000 (for Node.js), 8080 (for Java/Spring), 5000 (for Python/Flask)
+nginx_proxy_frontend_port: 3000
+
+# --- Optional Variables / Advanced SSL Settings ---
+# Nginx SSL session cache size.
+nginx_ssl_session_cache: "shared:SSL:10m"
+
+# Nginx SSL session timeout.
+nginx_ssl_session_timeout: "10m"
+
+# Nginx SSL protocols.
+nginx_ssl_protocols: "TLSv1.2 TLSv1.3"
+
+# Nginx SSL ciphers.
+nginx_ssl_ciphers: "EECDH+AESGCM:EDH+AESGCM"
+
+# Nginx DNS resolvers for OCSP stapling.
+# Use reliable public DNS servers or your own.
+nginx_resolver_ips:
+  - "8.8.8.8"
+  - "8.8.4.4"
+
+# Nginx resolver timeout.
+nginx_resolver_timeout: "5s"
+
+# Whether to remove the default Nginx site configuration.
+# Set to 'yes' to remove, 'no' to keep.
+nginx_remove_default_site: "yes"
+
+# List of Cloudflare IP ranges for set_real_ip_from directive.
+# This ensures Nginx logs the actual client IP, not Cloudflare's IP.
+# IMPORTANT: Keep this list updated with Cloudflare's official IP ranges:
+# https://www.cloudflare.com/ips/
+cloudflare_ipv4_ranges:
+  - "103.21.244.0/22"
+  - "103.22.200.0/22"
+  - "103.31.4.0/22"
+  - "104.16.0.0/12"
+  - "108.162.192.0/18"
+  - "131.0.72.0/22"
+  - "141.101.64.0/18"
+  - "162.158.0.0/15"
+  - "172.64.0.0/13"
+  - "173.245.48.0/20"
+  - "188.114.96.0/20"
+  - "190.93.240.0/20"
+  - "197.234.240.0/22"
+  - "198.41.128.0/17"
+  - "199.27.128.0/21"

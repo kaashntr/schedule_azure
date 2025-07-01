@@ -1,0 +1,15 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  vars:
+    resource_group: "internship-rg"
+    vm_name: "{{ proxy_vm_name }}"
+    local_port: 50022
+  roles:
+    - bastion
+- name: Install nginx on vm
+  hosts: proxyvm
+  become: true
+  roles:
+    - nginx_install

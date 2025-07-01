@@ -1,0 +1,7 @@
+---
+# handlers/main.yml for nginx_cloudflare_ssl role
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
