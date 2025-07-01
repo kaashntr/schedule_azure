@@ -10,7 +10,11 @@ pipeline{
         stage("Deploy container from image"){
             steps{
                 script{
-                    withCredentials([azureServicePrincipal('azure-service-principal')]) {
+                    withCredentials([
+                        azureServicePrincipal('azure-service-principal'),
+                        usernamePassword(credentialsId: 'postgres-creds', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASS')
+                    ]) 
+                    {
                         sh 'sh scripts/az_login.sh'
                         sh 'az account show'
                     }

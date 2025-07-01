@@ -1,0 +1,34 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars_files:
+    - /home/mint/Downloads/Documents/schedule_azure/ansible/vars.yml
+  vars:
+    resource_group: "internship-rg"
+    vm_name: "{{backend_vm_name}}"
+    local_port: 50024
+  roles:
+    - bastion
+- name: Run container from specified image and parametres
+  hosts: appvm
+  vars_files:
+    - /home/mint/Downloads/Documents/schedule_azure/ansible/vars.yml
+  vars:
+    container_name: "my_hell_back"
+    image: "kaashntr/hell_is_full:latest"
+    ports:
+      - "8080:8080"
+    env_vars: {
+      "DB_ENDPOINT":"{{postgre_hostname}}",
+      "USERNAME":"{{lookup('env','DB_USER')}}",
+      "USERPASSWORD":"{{lookup('env','DB_PASS')}}",
+      "DATABASE": "postgres",
+      "CACHE_ENDPOINT":"{{redis_private_ip}}"
+
+    }
+    restart_policy: "always"
+    volumes: []
+    network_mode: "bridge"
+    pull_image: "no"
+    container_extra_args: []
+  roles:
+    - run_container
