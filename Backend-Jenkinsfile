@@ -17,6 +17,7 @@ pipeline{
                     {
                         sh 'sh scripts/az_login.sh'
                         sh 'az account show'
+                        sh 'cd ansible && ansible-playbook -i inventory.ini backend_container.yml'
                     }
                 }
             }
