@@ -5,7 +5,6 @@
   community.docker.docker_container:
     name: "{{ container_name }}"
     state: absent
-    force_delete: yes
   register: container_removed_result
   changed_when: container_removed_result.changed
 
@@ -26,8 +25,7 @@
     env: "{{ env_vars }}" # Dictionary of environment variables
     volumes: "{{ volumes }}" # List of "host_path:container_path"
     network_mode: "{{ network_mode }}" # e.g., "bridge", "host"
-    comparisons:
-      image: true
+    image_comparison: 'desired-image'
   register: container_run_result
   changed_when: container_run_result.changed
 

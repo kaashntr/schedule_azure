@@ -1,0 +1,23 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars:
+    resource_group: "internship-rg"
+    vm_name: "dev-app"
+    local_port: 50023
+  roles:
+    - bastion
+- name: Run container from specified image and parametres
+  hosts: appvm
+  vars:
+    container_name: "my_blood_front"
+    image: "kaashntr/blood_is_fuel:latest"
+    ports:
+      - "3000:3000"
+    env_vars: {"BACKEND_URL":"http://localhost:8080/"}
+    restart_policy: "always"
+    volumes: []
+    network_mode: "bridge"
+    pull_image: "no"
+    container_extra_args: []
+  roles:
+    - run_container
