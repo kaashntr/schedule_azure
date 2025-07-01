@@ -13,7 +13,7 @@
     image: "kaashntr/blood_is_fuel:latest"
     ports:
       - "3000:3000"
-    env_vars: {"BACKEND_URL":"http://localhost:8080/"}
+    env_vars: {"BACKEND_URL":"http://localhost:8081/"}
     restart_policy: "always"
     volumes: []
     network_mode: "bridge"
