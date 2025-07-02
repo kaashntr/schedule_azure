@@ -5,8 +5,20 @@ pipeline{
         stage("Checkout SCM"){
             steps{
                 checkout scm
-                sh 'ls'
-                sh 'ansible --version'
+            }
+        }
+        stage("Deploy container from image"){
+            environment{
+                BACKEND_URL = 'https://app.class-schedule.pp.ua/api/'
+            }
+            steps{
+                script{
+                    withCredentials([azureServicePrincipal('azure-service-principal')]) {
+                        sh 'sh scripts/az_login.sh'
+                        sh 'az account show'
+                        sh 'cd ansible && ansible-playbook -i inventory.ini app_container.yml'
+                    }
+                }
             }
         }
     }

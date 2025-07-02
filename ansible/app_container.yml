@@ -1,8 +1,10 @@
 - name: Establish Bastion tunnel
   hosts: localhost
+  vars_files:
+    - /var/lib/jenkins/vars.yml
   vars:
     resource_group: "internship-rg"
-    vm_name: "dev-app"
+    vm_name: "{{app_vm_name}}"
     local_port: 50023
   roles:
     - bastion
@@ -13,7 +15,7 @@
     image: "kaashntr/blood_is_fuel:latest"
     ports:
       - "3000:3000"
-    env_vars: {"BACKEND_URL":"http://localhost:8081/"}
+    env_vars: {"BACKEND_URL":"{{lookup('env','BACKEND_URL')}}"}
     restart_policy: "always"
     volumes: []
     network_mode: "bridge"
