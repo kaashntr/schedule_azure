@@ -48,11 +48,12 @@ nginx_web_root: "/var/www/html"
 # The private IP address or hostname of your backend frontend application.
 # Example: "10.0.2.5" or "dev-frontend-vm"
 nginx_proxy_frontend_host: "10.0.2.5"
+nginx_proxy_backend_host: "10.0.0.0"
 
 # The port your backend frontend application is listening on.
 # Example: 3000 (for Node.js), 8080 (for Java/Spring), 5000 (for Python/Flask)
 nginx_proxy_frontend_port: 3000
-
+nginx_proxy_backend_port: 8080 
 # --- Optional Variables / Advanced SSL Settings ---
 # Nginx SSL session cache size.
 nginx_ssl_session_cache: "shared:SSL:10m"

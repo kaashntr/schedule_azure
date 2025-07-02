@@ -20,6 +20,8 @@
     nginx_ssl_certificate_key_src: "files/ssl_certificate.key"
     nginx_proxy_frontend_host: "{{app_private_ip}}"
     nginx_proxy_frontend_port: 3000
+    nginx_proxy_backend_host: "{{backend_private_ip}}"
+    nginx_proxy_backend_port: 8080
   hosts: proxyvm # Target your servers where Nginx will be configured
   become: yes # Required to install packages and manage Nginx configuration
 
