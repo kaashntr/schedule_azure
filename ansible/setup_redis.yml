@@ -1,9 +1,11 @@
 - name: Establish Bastion tunnel
   hosts: localhost
+  vars_files:
+    - vars.yml
   vars:
-    resource_group: "inernship_rg"
-    vm_name: "dev-redis"
-    local_port: 50024
+    resource_group: "internship-rg"
+    vm_name: "{{redis_vm_name}}"
+    local_port: 50025
   roles:
     - bastion
 
@@ -12,5 +14,6 @@
   gather_facts: true
   vars:
     redis_bind_address: "0.0.0.0"
+  become: true
   roles:
     - redis_install
