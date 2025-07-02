@@ -9,7 +9,7 @@
   roles:
     - bastion
 - name: Run container from specified image and parametres
-  hosts: appvm
+  hosts: backendvm
   vars_files:
     - /var/lib/jenkins/vars.yml
   vars:
