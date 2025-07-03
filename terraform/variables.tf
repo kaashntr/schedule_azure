@@ -1,6 +1,6 @@
 variable "az_subscription_id" {
   type        = string
-  default     = "class-schedule-rg"
+  
 }
 
 variable "resource_group_name" {
