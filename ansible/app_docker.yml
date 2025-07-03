@@ -11,3 +11,4 @@
   become: true
   roles:
     - docker_install
+    - node_exporter_install
