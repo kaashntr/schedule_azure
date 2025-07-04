@@ -1,0 +1,35 @@
+- name: Establish Bastion tunnel
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  vars:
+    resource_group: "internship-rg"
+    vm_name: "{{ proxy_vm_name }}"
+    local_port: 50022
+  roles:
+    - bastion
+- name: Deploy Prometheus Server with Custom Configuration
+  hosts: proxyvm
+  become: true # Run tasks with sudo/root privileges
+  vars_files:
+    - vars.yml
+
+  roles:
+    - role: prometheus_install
+      # Override the Prometheus version
+      prometheus_version: "2.50.1"
+
+      # Override the data retention time
+      prometheus_retention_time: "15d"
+
+      # Add a new scrape job for cAdvisor
+      # We append to prometheus_custom_scrape_configs, which is an empty list by default
+      prometheus_custom_scrape_configs:
+        - job_name: 'app_cadvisor'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['{{app_private_ip}}:9150']
+        - job_name: 'app_node'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['{{app_private_ip}}:9100']

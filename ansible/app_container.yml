@@ -21,5 +21,6 @@
     network_mode: "bridge"
     pull_image: "no"
     container_extra_args: []
+  become: true
   roles:
     - run_container

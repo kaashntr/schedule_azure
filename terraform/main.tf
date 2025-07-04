@@ -29,7 +29,6 @@ module "vnet" {
   bastion_subnet_address_space = var.bastion_subnet_address_space
   db_subnet_address_space      = var.db_subnet_address_space
   redis_subnet_address_space   = var.redis_subnet_address_space
-  # bastion_nsg_id               = module.bastio_nsg.network_security_group_id
   postgre_nsg_id               = module.postgre_nsg.network_security_group_id
   redis_nsg_id                 = module.redis_nsg.network_security_group_id
 
@@ -94,6 +93,7 @@ module "redis_nsg" {
   tags                       = var.tags
   depends_on                 = [azurerm_resource_group.rg]
 }
+
 module "bastion" {
   source              = "./modules/bastion"
   resource_group_name = azurerm_resource_group.rg.name
@@ -146,7 +146,7 @@ module "proxy_vm" {
   location                     = azurerm_resource_group.rg.location
   prefix                       = var.prefix
   vm_name                      = "proxy"
-  vm_size                      = var.vm_size
+  vm_size                      = "Standard_B1ms"
   admin_username               = var.admin_username
   os_disk_caching              = var.vm_os_disk_caching
   os_disk_storage_account_type = var.vm_os_disk_storage_account_type

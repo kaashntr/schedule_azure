@@ -126,6 +126,12 @@ variable "redis_custom_rules" {
   default     = []
 }
 
+variable "monitoring_custom_rules" {
+  description = "Custom set of security rules using this format"
+  type        = list(any)
+  default     = []
+}
+
 variable "destination_address_prefix" {
   type    = list(any)
   default = ["*"]
@@ -162,6 +168,12 @@ variable "redis_nsg_name" {
   description = "Name of the network security group"
   default     = "redis_nsg"
 }
+
+variable "monitoring_nsg_name" {
+  description = "Name of the network security group"
+  default     = "monitoring_nsg"
+}
+
 variable "source_address_prefix" {
   type    = list(any)
   default = ["*"]

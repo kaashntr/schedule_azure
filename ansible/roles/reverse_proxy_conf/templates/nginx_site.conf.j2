@@ -97,6 +97,27 @@ server {
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
     }
+    location /monitoring/ {
+        # Pass the request to the backend frontend application
+        proxy_pass http://{{ nginx_proxy_monitoring_host }}:{{ nginx_proxy_monitoring_port }}/;
+
+        # Standard proxy headers to pass client information to the backend
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme; # Tells backend if original request was HTTP or HTTPS
+        proxy_set_header X-Forwarded-Host $host; # Passes the original host header
+
+        # Optional: Adjust timeouts if your backend takes a long time to respond
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+
+        # Optional: Handle WebSocket connections (if your frontend uses them)
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
 
     # Optional: Deny access to hidden files (e.g., .git, .htpasswd)
     location ~ /\. {
