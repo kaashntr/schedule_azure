@@ -19,7 +19,7 @@ pipeline{
                             sh 'az account show'
                             sh '''
                                 sh terraform init
-                                sh export_subscription.sh apply -auto-approve -var-file=$SECRET_PATH
+                                sh export_subscription.sh plan -var-file=$SECRET_PATH
                             '''
                         }
                     }
