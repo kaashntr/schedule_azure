@@ -18,7 +18,7 @@ pipeline{
                             sh 'sh ../scripts/az_login.sh'
                             sh 'az account show'
                             sh '''
-                                sh terraform init
+                                terraform init
                                 sh export_subscription.sh plan -var-file=$SECRET_PATH
                             '''
                         }
