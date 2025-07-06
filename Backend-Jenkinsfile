@@ -17,7 +17,10 @@ pipeline{
                             ]){
                             sh 'sh ../scripts/az_login.sh'
                             sh 'az account show'
-                            sh 'sh export_subscription.sh apply -auto-approve'
+                            sh '''
+                                sh terraform init
+                                sh export_subscription.sh apply -auto-approve -var-file=$SECRET_PATH
+                            '''
                         }
                     }
                 }
