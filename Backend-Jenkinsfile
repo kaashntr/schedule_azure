@@ -7,13 +7,29 @@ pipeline{
                 checkout scm
             }
         }
+        stage("Verify infrastructure"){
+            steps{
+                script{
+                    dir('terraform'){
+                        withCredentials([
+                            file(credentialsId: 'tfvars', variable: 'SECRET_PATH'),
+                            azureServicePrincipal('azure-service-principal')
+                            ]){
+                            sh 'sh ../scripts/az_login.sh'
+                            sh 'az account show'
+                            sh 'sh export_subscription.sh apply -auto-approve'
+                        }
+                    }
+                }
+            }
+        }
         stage("Deploy container from image"){
             steps{
                 script{
                     withCredentials([
                         azureServicePrincipal('azure-service-principal'),
                         usernamePassword(credentialsId: 'postgres-creds', usernameVariable: 'DB_USER', passwordVariable: 'DB_PASS')
-                    ]) 
+                    ])
                     {
                         sh 'sh scripts/az_login.sh'
                         sh 'az account show'

@@ -33,3 +33,11 @@
           metrics_path: '/metrics'
           static_configs:
             - targets: ['{{app_private_ip}}:9100']
+        - job_name: 'backend_cadvisor'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['{{backend_private_ip}}:9150']
+        - job_name: 'backend_node'
+          metrics_path: '/metrics'
+          static_configs:
+            - targets: ['{{backend_private_ip}}:9100']

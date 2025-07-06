@@ -14,3 +14,18 @@
   roles:
     - docker_install
     - node_exporter_install
+    - role: run_container
+      vars:
+        container_name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:latest
+        pull_image: true
+        restart_policy: always
+        ports:
+          - "9150:8080"
+        env_vars: {}
+        volumes:
+          - "/:/rootfs:ro"
+          - "/var/run:/var/run:ro"
+          - "/sys:/sys:ro"
+          - "/var/lib/docker/:/var/lib/docker:ro"
+        network_mode: bridge

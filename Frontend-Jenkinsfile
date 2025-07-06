@@ -7,6 +7,22 @@ pipeline{
                 checkout scm
             }
         }
+        stage("Verify infrastructure"){
+            steps{
+                script{
+                    dir('terraform'){
+                        withCredentials([
+                            file(credentialsId: 'tfvars', variable: 'SECRET_PATH'),
+                            azureServicePrincipal('azure-service-principal')
+                            ]){
+                            sh 'sh ../scripts/az_login.sh'
+                            sh 'az account show'
+                            sh 'sh export_subscription.sh apply -auto-approve'
+                        }
+                    }
+                }
+            }
+        }
         stage("Deploy container from image"){
             environment{
                 BACKEND_URL = 'https://app.class-schedule.pp.ua/api/'
