@@ -1,7 +1,7 @@
 - name: Establish Bastion tunnel
   hosts: localhost
   vars_files:
-    - /var/lib/jenkins/vars.yml
+    - vars.yml
   vars:
     resource_group: "internship-rg"
     vm_name: "{{app_vm_name}}"
