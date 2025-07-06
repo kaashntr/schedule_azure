@@ -1,7 +1,7 @@
 - name: Establish Bastion tunnel
   hosts: localhost
   vars_files:
-    - /var/lib/jenkins/vars.yml
+    - vars.yml
   vars:
     resource_group: "internship-rg"
     vm_name: "dev-backend"
@@ -11,7 +11,7 @@
 - name: Run container from specified image and parametres
   hosts: backendvm
   vars_files:
-    - /var/lib/jenkins/vars.yml
+    - vars.yml
   vars:
     container_name: "my_hell_back"
     image: "kaashntr/hell_is_full:latest"
