@@ -11,11 +11,7 @@
   vars_files:
     - vars.yml
   vars:
-    pgpassword: "Password123!"
-    admin_user: "postgre"
-    pgdatabase: "postgres"
-    src_dump_path: "/home/mint/Downloads/Documents/schedule_azure/ansible/roles/restore_from_dump/files/2024-08-19.dump"
-    dest_dump_path: "/tmp/2024-08-19.dump"
+    
 
   roles:
     - restore_from_dump
